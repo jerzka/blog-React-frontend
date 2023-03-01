@@ -1,0 +1,19 @@
+body{
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 18px;
+}
+#page-body{
+  max-width:700px;
+  margin:auto;
+  padding-top:10vh;
+}
+nav ul{
+  display: flex;
+  justify-content: space-evenly;
+  list-style-type: none;
+}
+
+nav li{
+  text-decoration: none;
+}
+
