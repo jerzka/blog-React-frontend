@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import NotFoundPage from "./NotFoundPage";
 import articles from './article-content';
@@ -8,25 +8,32 @@ import AddCommentForm from '../components/AddCommentForm';
 import useUser from '../hooks/useUser';
 
 const ArticlePage = () => {
-    const [articleInfo, setArticleInfo] = useState({name: '', upvotes: 0, comments: []});
+    const [articleInfo, setArticleInfo] = useState({name: '', upvotes: 0, comments: [], canUpvote: false});
+    const { canUpvote } = articleInfo;
     const { articleId } = useParams();
-
-    const {user, isLoading } = useUser();
+    const { user, isLoading } = useUser();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadArticleInfo = async () => {
-            const response = await axios.get(`/api/articles/${articleId}`); //because proxy in package.json is setup no need to write http://localhost:8000 - proxy prevent CORS-Origin-Errors
+            const token = user && await user.getIdToken();
+            const headers = token ? {authtoken: token} : {}; //in axios token can be string 'null'
+            const response = await axios.get(`/api/articles/${articleId}`,{ headers }); //because proxy in package.json is setup no need to write http://localhost:8000 - proxy prevent CORS-Origin-Errors
             const newArticleInfo = response.data;
-            //setArticleInfo({upvotes: Math.ceil(Math.random() * 10), commment: []});
             setArticleInfo(newArticleInfo);
         }
-        loadArticleInfo();
-    }, [articleId]);
+        if(isLoading){
+            loadArticleInfo();
+        }
+    }, [isLoading, user]);
     
     const article = articles.find(article => article.name === articleId);
 
     const addUpvote = async () => {
-        const response = await axios.put(`/api/articles/${articleId}/upvote`);
+        const token = user && await user.getIdToken();
+        const headers = token ? {authtoken: token} : {};
+        //second parameter is axios PUT request body
+        const response = await axios.put(`/api/articles/${articleId}/upvote`, null, {headers});
         const updatedArticle = response.data;
         setArticleInfo(updatedArticle);
     }
@@ -39,8 +46,10 @@ const ArticlePage = () => {
         <>
         <h1>{article.title}</h1>
         {user
-            ?<button onClick={addUpvote}>Upvote</button>
-            :<button>Log in to upvote</button>
+            ?<button onClick={addUpvote}>{canUpvote ? 'Upvote' : 'Already upvoted'}</button>
+            :<button onClick={() => {
+                navigate('/login');
+            }}>Log in to upvote</button>
         }
         <p>This article has { articleInfo.upvotes } vote(s)</p>
         {article.content.map((paragraph, index) => (
@@ -51,7 +60,9 @@ const ArticlePage = () => {
                 articleName={articleId}
                 onArticleUpdated={updatedArticle => setArticleInfo(updatedArticle)}
             />
-            :<button>Log in to add a comment</button>
+            :<button onClick={() => {
+                navigate('/login');
+            }}>Log in to add a comment</button>
         }
         <CommentsList comments={articleInfo.comments} />
         </>
