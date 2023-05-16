@@ -22,7 +22,7 @@ const ArticlePage = () => {
             const newArticleInfo = response.data;
             setArticleInfo(newArticleInfo);
         }
-        if(isLoading){
+        if(!isLoading){
             loadArticleInfo();
         }
     }, [isLoading, user]);
@@ -45,6 +45,7 @@ const ArticlePage = () => {
     return (
         <>
         <h1>{article.title}</h1>
+        <div className="upvotes-section">
         {user
             ?<button onClick={addUpvote}>{canUpvote ? 'Upvote' : 'Already upvoted'}</button>
             :<button onClick={() => {
@@ -52,6 +53,7 @@ const ArticlePage = () => {
             }}>Log in to upvote</button>
         }
         <p>This article has { articleInfo.upvotes } vote(s)</p>
+        </div>
         {article.content.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
         ))}

@@ -12,7 +12,7 @@ const LoginPage = () =>{
     const logIn = async () => {
         try{
             await signInWithEmailAndPassword(getAuth(), email, password);
-            navigate('/articles');
+            navigate('/projects');
         } catch(e){
             setError(e.message);
         }
@@ -22,7 +22,7 @@ const LoginPage = () =>{
     return (
         <>
         <h1>Login</h1>
-        {error  && <p>{error}</p>}
+        {error && <p className="error-msg">{error}</p>}
         <input 
             placeholder="Your email adress"
             value={email}

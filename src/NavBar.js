@@ -16,8 +16,11 @@ const NavBar = () =>{
                     <Link to="/about">About</Link>
                 </li>
                 <li>
-                    <Link to="/articles">Articles List</Link>
+                    <Link to="/projects">Projects List</Link>
                 </li>
+                {/* <li>
+                    <Link to="/articles">Articles List</Link>
+                </li> */}
             </ul>
             <div className="nav-right">
                 {user 

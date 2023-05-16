@@ -18,7 +18,7 @@ const RegisterPage = () =>{
             }
 
             await createUserWithEmailAndPassword(getAuth(), email, password);
-            navigate('/articles');
+            navigate('/projects');
 
         }catch(e){
             setError(e.message);
